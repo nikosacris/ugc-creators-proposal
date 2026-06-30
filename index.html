@@ -3,18 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <title>UGC Casting — Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#F6F4EF;
-    --ink:#1B1B1B;
-    --rule:#1B1B1B;
-    --accent:#C5491B;
-    --accent-soft:#F0DAC9;
-    --muted:#6B6660;
+    --ink:#111111;
+    --paper:#FFFFFF;
+    --yellow:#FFD400;
+    --yellow-soft:#FFF3B0;
+    --muted:#6E6E6E;
     --card:#FFFFFF;
-    --display: 'Georgia', 'Iowan Old Style', serif;
-    --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    --mono: 'Courier New', Courier, monospace;
+    --line:#111111;
+    --display: 'Baloo 2', sans-serif;
+    --body: 'Quicksand', sans-serif;
   }
   *{box-sizing:border-box;}
   body{
@@ -24,142 +26,182 @@
     font-family:var(--body);
     -webkit-font-smoothing:antialiased;
   }
+
   header{
-    padding:56px 6vw 32px;
-    border-bottom:3px solid var(--rule);
+    background:var(--ink);
+    color:var(--paper);
+    padding:60px 6vw 44px;
+    position:relative;
+    overflow:hidden;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:220px; height:220px;
+    background:var(--yellow);
+    border-radius:50%;
+    opacity:.9;
   }
   .eyebrow{
-    font-family:var(--mono);
+    display:inline-block;
+    font-family:var(--body);
+    font-weight:700;
     text-transform:uppercase;
-    letter-spacing:.14em;
+    letter-spacing:.08em;
     font-size:12px;
-    color:var(--accent);
-    margin-bottom:14px;
+    color:var(--ink);
+    background:var(--yellow);
+    padding:6px 14px;
+    border-radius:999px;
+    margin-bottom:18px;
   }
   h1{
     font-family:var(--display);
-    font-size:clamp(36px,5.2vw,64px);
-    line-height:1.02;
-    margin:0 0 14px;
-    font-weight:400;
-    letter-spacing:-.01em;
+    font-weight:800;
+    font-size:clamp(34px,5vw,58px);
+    line-height:1.05;
+    margin:0 0 16px;
+    position:relative;
+    z-index:1;
   }
-  h1 em{ font-style:italic; color:var(--accent); }
+  h1 .hl{
+    color:var(--yellow);
+  }
   .sub{
     max-width:560px;
-    color:var(--muted);
+    color:#D9D9D9;
     font-size:16px;
-    line-height:1.5;
+    line-height:1.6;
+    font-weight:500;
+    position:relative;
+    z-index:1;
   }
+
   .toolbar{
     display:flex;
-    gap:10px;
+    gap:12px;
     flex-wrap:wrap;
-    padding:24px 6vw 0;
+    padding:26px 6vw 0;
+    background:var(--paper);
   }
   .toolbar button{
-    font-family:var(--mono);
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    padding:9px 16px;
-    border:1px solid var(--rule);
-    background:transparent;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:14px;
+    padding:11px 22px;
+    border:3px solid var(--ink);
+    background:var(--paper);
     color:var(--ink);
     cursor:pointer;
     border-radius:999px;
     transition:all .15s ease;
   }
-  .toolbar button:hover{ background:var(--ink); color:var(--paper); }
-  .toolbar button.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .toolbar button:hover{ background:var(--yellow-soft); }
+  .toolbar button.active{ background:var(--yellow); border-color:var(--ink); }
 
-  main{ padding:32px 6vw 80px; }
+  main{ padding:30px 6vw 90px; background:var(--paper); }
 
   .roster{
     display:grid;
     grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-    gap:1px;
-    background:var(--rule);
-    border:1px solid var(--rule);
-    margin-top:8px;
+    gap:22px;
+    margin-top:10px;
   }
   .card{
     background:var(--card);
-    padding:28px 26px 24px;
+    border:3px solid var(--ink);
+    border-radius:26px;
+    padding:26px 24px 22px;
     cursor:pointer;
-    transition:background .15s ease;
-    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:6px 6px 0 var(--ink);
   }
-  .card:hover{ background:var(--accent-soft); }
+  .card:hover{
+    transform:translate(-3px,-3px);
+    box-shadow:9px 9px 0 var(--yellow);
+  }
   .card .num{
-    font-family:var(--mono);
-    font-size:12px;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:13px;
     color:var(--muted);
-    letter-spacing:.1em;
+    letter-spacing:.08em;
   }
   .card-name-row{
     display:flex;
     align-items:center;
     gap:14px;
-    margin:10px 0 4px;
+    margin:10px 0 6px;
   }
   .avatar{
-    width:52px;
-    height:52px;
+    width:54px;
+    height:54px;
     border-radius:50%;
     flex:none;
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:var(--display);
-    font-size:19px;
-    color:#fff;
-    border:2px solid var(--ink);
+    font-weight:700;
+    font-size:18px;
+    color:var(--ink);
+    background:var(--yellow);
+    border:3px solid var(--ink);
   }
   .card h2{
     font-family:var(--display);
-    font-size:26px;
-    font-weight:400;
+    font-weight:700;
+    font-size:24px;
     margin:0;
   }
   .card .platform{
-    font-family:var(--mono);
+    display:inline-block;
+    font-family:var(--body);
+    font-weight:700;
     font-size:11px;
     text-transform:uppercase;
-    letter-spacing:.08em;
-    color:var(--accent);
+    letter-spacing:.06em;
+    color:var(--ink);
+    background:var(--yellow-soft);
+    border-radius:999px;
+    padding:4px 12px;
     margin-bottom:16px;
   }
   .card .rate{
     font-family:var(--display);
-    font-size:34px;
+    font-weight:800;
+    font-size:36px;
     margin:4px 0 2px;
   }
   .card .rate-label{
     font-size:11px;
     color:var(--muted);
-    font-family:var(--mono);
+    font-family:var(--body);
+    font-weight:600;
     text-transform:uppercase;
-    letter-spacing:.08em;
+    letter-spacing:.06em;
     margin-bottom:14px;
   }
   .card .usage{
-    font-size:13px;
+    font-size:13.5px;
+    font-weight:600;
     color:var(--ink);
-    border-top:1px solid #e3ddd2;
+    border-top:2px dashed var(--ink);
     padding-top:12px;
     margin-top:4px;
   }
-  .card .usage b{ color:var(--accent); }
+  .card .usage b{ color:var(--ink); background:var(--yellow); padding:1px 6px; border-radius:6px; }
 
   .detail{
-    margin-top:48px;
-    border-top:3px solid var(--rule);
-    padding-top:32px;
+    margin-top:52px;
+    border-top:4px solid var(--ink);
+    padding-top:36px;
   }
   .detail-empty{
-    font-family:var(--mono);
-    font-size:13px;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:14px;
     color:var(--muted);
     text-align:center;
     padding:40px 0;
@@ -172,123 +214,141 @@
   }
   @media (max-width:760px){ .detail-grid{ grid-template-columns:1fr; } }
 
-  .detail-head .num{ font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:.1em;}
+  .detail-head .num{ font-family:var(--display); font-weight:700; font-size:13px; color:var(--ink); background:var(--yellow); display:inline-block; padding:4px 12px; border-radius:999px; }
   .detail-name-row{
     display:flex;
     align-items:center;
     gap:18px;
-    margin:8px 0 6px;
+    margin:14px 0 6px;
   }
   .avatar-lg{
-    width:74px;
-    height:74px;
+    width:78px;
+    height:78px;
     border-radius:50%;
     flex:none;
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:var(--display);
-    font-size:26px;
-    color:#fff;
-    border:2px solid var(--ink);
+    font-weight:700;
+    font-size:27px;
+    color:var(--ink);
+    background:var(--yellow);
+    border:3px solid var(--ink);
   }
   .detail-head h2{
     font-family:var(--display);
-    font-size:clamp(30px,4.4vw,46px);
+    font-weight:800;
+    font-size:clamp(30px,4.2vw,44px);
     margin:0;
-    font-weight:400;
   }
   .detail-head .platform-tag{
     display:inline-block;
-    font-family:var(--mono);
-    font-size:11px;
+    font-family:var(--body);
+    font-weight:700;
+    font-size:12px;
     text-transform:uppercase;
-    letter-spacing:.08em;
-    border:1px solid var(--rule);
+    letter-spacing:.06em;
+    border:2.5px solid var(--ink);
     border-radius:999px;
-    padding:5px 12px;
+    padding:6px 14px;
     margin-bottom:20px;
   }
   .detail-head a.btn{
     display:inline-block;
     margin-top:18px;
-    font-family:var(--mono);
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    background:var(--accent);
-    color:#fff;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:14px;
+    background:var(--ink);
+    color:var(--yellow);
     text-decoration:none;
-    padding:12px 22px;
+    padding:13px 24px;
     border-radius:999px;
+    border:3px solid var(--ink);
+    transition:all .15s ease;
   }
-  .detail-head a.btn:hover{ background:var(--ink); }
+  .detail-head a.btn:hover{ background:var(--yellow); color:var(--ink); }
 
   table.specs{
     width:100%;
-    border-collapse:collapse;
-    font-size:14px;
+    border-collapse:separate;
+    border-spacing:0 10px;
+    font-size:14.5px;
   }
-  table.specs tr{ border-bottom:1px solid #e3ddd2; }
-  table.specs td{ padding:14px 4px; vertical-align:top; }
+  table.specs tr{ background:#FAFAFA; }
+  table.specs td{ padding:16px 18px; vertical-align:top; border-top:3px solid var(--ink); border-bottom:3px solid var(--ink); }
+  table.specs td:first-child{ border-left:3px solid var(--ink); border-radius:14px 0 0 14px; }
+  table.specs td:last-child{ border-right:3px solid var(--ink); border-radius:0 14px 14px 0; }
   table.specs td.k{
     width:140px;
-    font-family:var(--mono);
-    font-size:11px;
+    font-family:var(--display);
+    font-weight:700;
+    font-size:12px;
     text-transform:uppercase;
-    letter-spacing:.06em;
+    letter-spacing:.04em;
     color:var(--muted);
   }
-  table.specs td.v{ line-height:1.5; }
-  table.specs td.v.price{ font-family:var(--display); font-size:22px; }
-  table.specs td.v.rights{ color:var(--accent); font-weight:600; }
+  table.specs td.v{ line-height:1.55; font-weight:500; }
+  table.specs td.v.price{ font-family:var(--display); font-weight:800; font-size:24px; }
+  table.specs td.v.rights{ font-weight:700; }
+  table.specs td.v.rights span{ background:var(--yellow); padding:2px 8px; border-radius:6px; }
 
   .compare-wrap{ overflow-x:auto; display:none; }
   .compare-wrap.active{ display:block; }
   table.compare{
     width:100%;
     border-collapse:collapse;
-    min-width:760px;
+    min-width:780px;
     font-size:13.5px;
+    border:3px solid var(--ink);
+    border-radius:20px;
+    overflow:hidden;
   }
   table.compare th, table.compare td{
-    border:1px solid var(--rule);
-    padding:14px 16px;
+    border-bottom:2px solid var(--ink);
+    padding:16px 18px;
     text-align:left;
     vertical-align:top;
   }
+  table.compare tr:last-child td{ border-bottom:none; }
   table.compare th{
-    font-family:var(--mono);
+    font-family:var(--display);
+    font-weight:700;
     text-transform:uppercase;
-    letter-spacing:.06em;
-    font-size:11px;
+    letter-spacing:.04em;
+    font-size:12px;
     background:var(--ink);
-    color:var(--paper);
+    color:var(--yellow);
   }
-  table.compare td.name-cell{ display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:17px; }
+  table.compare td.name-cell{ display:flex; align-items:center; gap:10px; font-family:var(--display); font-weight:700; font-size:17px; }
   .avatar-sm{
-    width:30px;
-    height:30px;
+    width:32px;
+    height:32px;
     border-radius:50%;
     flex:none;
     display:flex;
     align-items:center;
     justify-content:center;
     font-family:var(--display);
+    font-weight:700;
     font-size:13px;
-    color:#fff;
-    border:1.5px solid var(--ink);
+    color:var(--ink);
+    background:var(--yellow);
+    border:2px solid var(--ink);
   }
-  table.compare td.price{ font-family:var(--display); font-size:18px; color:var(--accent); }
-  table.compare a{ color:var(--accent); font-family:var(--mono); font-size:12px; text-decoration:none; }
-  table.compare a:hover{ text-decoration:underline; }
+  table.compare td.price{ font-family:var(--display); font-weight:800; font-size:18px; }
+  table.compare a{ color:var(--ink); font-family:var(--display); font-weight:700; font-size:12px; text-decoration:none; background:var(--yellow); padding:5px 12px; border-radius:999px; }
+  table.compare a:hover{ background:var(--ink); color:var(--yellow); }
 
   footer{
-    padding:28px 6vw 50px;
-    font-family:var(--mono);
-    font-size:11px;
+    padding:30px 6vw 54px;
+    font-family:var(--body);
+    font-weight:600;
+    font-size:12px;
     color:var(--muted);
-    border-top:1px solid #e3ddd2;
+    border-top:2px solid #eee;
+    background:var(--paper);
   }
 </style>
 </head>
@@ -296,7 +356,7 @@
 
 <header>
   <div class="eyebrow">Internal proposal — UGC content</div>
-  <h1>Five creators,<br><em>one campaign.</em></h1>
+  <h1>Five creators,<br>one <span class="hl">campaign.</span></h1>
   <div class="sub">A shortlist of UGC creators on Fiverr, evaluated by entry price, video length, and usage rights. Click any profile for full detail, or switch to table view to compare everything at a glance.</div>
 </header>
 
@@ -340,7 +400,6 @@ const creators = [
   {
     name:"Victoria O",
     initials:"VO",
-    color:"#C5491B",
     platform:"Fiverr",
     rate:"$75",
     rateLabel:"Basic plan",
@@ -351,7 +410,6 @@ const creators = [
   {
     name:"Brian D",
     initials:"BD",
-    color:"#2E5339",
     platform:"Fiverr",
     rate:"$120",
     rateLabel:"Basic plan",
@@ -362,7 +420,6 @@ const creators = [
   {
     name:"Haley Fernandes",
     initials:"HF",
-    color:"#8A4B6B",
     platform:"Fiverr",
     rate:"$50",
     rateLabel:"Basic plan",
@@ -373,7 +430,6 @@ const creators = [
   {
     name:"Abigail G",
     initials:"AG",
-    color:"#1B4965",
     platform:"Fiverr",
     rate:"$130",
     rateLabel:"Basic plan",
@@ -384,7 +440,6 @@ const creators = [
   {
     name:"Peter",
     initials:"P",
-    color:"#6B5B0E",
     platform:"Fiverr",
     rate:"$60",
     rateLabel:"Basic plan",
@@ -405,7 +460,7 @@ creators.forEach((c,i)=>{
   card.innerHTML = `
     <div class="num">0${i+1}</div>
     <div class="card-name-row">
-      <div class="avatar" style="background:${c.color}">${c.initials}</div>
+      <div class="avatar">${c.initials}</div>
       <h2>${c.name}</h2>
     </div>
     <div class="platform">${c.platform}</div>
@@ -417,7 +472,7 @@ creators.forEach((c,i)=>{
 
   const row = document.createElement('tr');
   row.innerHTML = `
-    <td class="name-cell"><span class="avatar-sm" style="background:${c.color}">${c.initials}</span>${c.name}</td>
+    <td class="name-cell"><span class="avatar-sm">${c.initials}</span>${c.name}</td>
     <td>${c.platform}</td>
     <td class="price">${c.rate}</td>
     <td>${c.comments}</td>
@@ -434,16 +489,16 @@ function showDetail(i){
       <div class="detail-head">
         <div class="num">CREATOR 0${i+1}</div>
         <div class="detail-name-row">
-          <div class="avatar-lg" style="background:${c.color}">${c.initials}</div>
+          <div class="avatar-lg">${c.initials}</div>
           <h2>${c.name}</h2>
         </div>
         <div class="platform-tag">${c.platform}</div><br>
         <a class="btn" href="${c.link}" target="_blank" rel="noopener">View profile on Fiverr →</a>
       </div>
       <table class="specs">
-        <tr><td class="k">Rate</td><td class="v price">${c.rate} <span style="font-size:13px;color:var(--muted);font-family:var(--body);">/ ${c.rateLabel.toLowerCase()}</span></td></tr>
+        <tr><td class="k">Rate</td><td class="v price">${c.rate} <span style="font-size:13px;color:var(--muted);font-family:var(--body);font-weight:600;">/ ${c.rateLabel.toLowerCase()}</span></td></tr>
         <tr><td class="k">Comments</td><td class="v">${c.comments}</td></tr>
-        <tr><td class="k">Usage rights</td><td class="v rights">${c.usage}</td></tr>
+        <tr><td class="k">Usage rights</td><td class="v rights"><span>${c.usage}</span></td></tr>
       </table>
     </div>
   `;
