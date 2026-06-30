@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>UGC Casting — Proposal</title>
+<style>
+  :root{
+    --paper:#F6F4EF;
+    --ink:#1B1B1B;
+    --rule:#1B1B1B;
+    --accent:#C5491B;
+    --accent-soft:#F0DAC9;
+    --muted:#6B6660;
+    --card:#FFFFFF;
+    --display: 'Georgia', 'Iowan Old Style', serif;
+    --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --mono: 'Courier New', Courier, monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    padding:56px 6vw 32px;
+    border-bottom:3px solid var(--rule);
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:var(--display);
+    font-size:clamp(36px,5.2vw,64px);
+    line-height:1.02;
+    margin:0 0 14px;
+    font-weight:400;
+    letter-spacing:-.01em;
+  }
+  h1 em{ font-style:italic; color:var(--accent); }
+  .sub{
+    max-width:560px;
+    color:var(--muted);
+    font-size:16px;
+    line-height:1.5;
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    padding:24px 6vw 0;
+  }
+  .toolbar button{
+    font-family:var(--mono);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    padding:9px 16px;
+    border:1px solid var(--rule);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    border-radius:999px;
+    transition:all .15s ease;
+  }
+  .toolbar button:hover{ background:var(--ink); color:var(--paper); }
+  .toolbar button.active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+  main{ padding:32px 6vw 80px; }
+
+  .roster{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:1px;
+    background:var(--rule);
+    border:1px solid var(--rule);
+    margin-top:8px;
+  }
+  .card{
+    background:var(--card);
+    padding:28px 26px 24px;
+    cursor:pointer;
+    transition:background .15s ease;
+    position:relative;
+  }
+  .card:hover{ background:var(--accent-soft); }
+  .card .num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--muted);
+    letter-spacing:.1em;
+  }
+  .card-name-row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin:10px 0 4px;
+  }
+  .avatar{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    flex:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--display);
+    font-size:19px;
+    color:#fff;
+    border:2px solid var(--ink);
+  }
+  .card h2{
+    font-family:var(--display);
+    font-size:26px;
+    font-weight:400;
+    margin:0;
+  }
+  .card .platform{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--accent);
+    margin-bottom:16px;
+  }
+  .card .rate{
+    font-family:var(--display);
+    font-size:34px;
+    margin:4px 0 2px;
+  }
+  .card .rate-label{
+    font-size:11px;
+    color:var(--muted);
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-bottom:14px;
+  }
+  .card .usage{
+    font-size:13px;
+    color:var(--ink);
+    border-top:1px solid #e3ddd2;
+    padding-top:12px;
+    margin-top:4px;
+  }
+  .card .usage b{ color:var(--accent); }
+
+  .detail{
+    margin-top:48px;
+    border-top:3px solid var(--rule);
+    padding-top:32px;
+  }
+  .detail-empty{
+    font-family:var(--mono);
+    font-size:13px;
+    color:var(--muted);
+    text-align:center;
+    padding:40px 0;
+  }
+  .detail-grid{
+    display:grid;
+    grid-template-columns:1fr 1.4fr;
+    gap:40px;
+    align-items:start;
+  }
+  @media (max-width:760px){ .detail-grid{ grid-template-columns:1fr; } }
+
+  .detail-head .num{ font-family:var(--mono); font-size:12px; color:var(--accent); letter-spacing:.1em;}
+  .detail-name-row{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin:8px 0 6px;
+  }
+  .avatar-lg{
+    width:74px;
+    height:74px;
+    border-radius:50%;
+    flex:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--display);
+    font-size:26px;
+    color:#fff;
+    border:2px solid var(--ink);
+  }
+  .detail-head h2{
+    font-family:var(--display);
+    font-size:clamp(30px,4.4vw,46px);
+    margin:0;
+    font-weight:400;
+  }
+  .detail-head .platform-tag{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    border:1px solid var(--rule);
+    border-radius:999px;
+    padding:5px 12px;
+    margin-bottom:20px;
+  }
+  .detail-head a.btn{
+    display:inline-block;
+    margin-top:18px;
+    font-family:var(--mono);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    background:var(--accent);
+    color:#fff;
+    text-decoration:none;
+    padding:12px 22px;
+    border-radius:999px;
+  }
+  .detail-head a.btn:hover{ background:var(--ink); }
+
+  table.specs{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
+  table.specs tr{ border-bottom:1px solid #e3ddd2; }
+  table.specs td{ padding:14px 4px; vertical-align:top; }
+  table.specs td.k{
+    width:140px;
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+  }
+  table.specs td.v{ line-height:1.5; }
+  table.specs td.v.price{ font-family:var(--display); font-size:22px; }
+  table.specs td.v.rights{ color:var(--accent); font-weight:600; }
+
+  .compare-wrap{ overflow-x:auto; display:none; }
+  .compare-wrap.active{ display:block; }
+  table.compare{
+    width:100%;
+    border-collapse:collapse;
+    min-width:760px;
+    font-size:13.5px;
+  }
+  table.compare th, table.compare td{
+    border:1px solid var(--rule);
+    padding:14px 16px;
+    text-align:left;
+    vertical-align:top;
+  }
+  table.compare th{
+    font-family:var(--mono);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-size:11px;
+    background:var(--ink);
+    color:var(--paper);
+  }
+  table.compare td.name-cell{ display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:17px; }
+  .avatar-sm{
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    flex:none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--display);
+    font-size:13px;
+    color:#fff;
+    border:1.5px solid var(--ink);
+  }
+  table.compare td.price{ font-family:var(--display); font-size:18px; color:var(--accent); }
+  table.compare a{ color:var(--accent); font-family:var(--mono); font-size:12px; text-decoration:none; }
+  table.compare a:hover{ text-decoration:underline; }
+
+  footer{
+    padding:28px 6vw 50px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--muted);
+    border-top:1px solid #e3ddd2;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Internal proposal — UGC content</div>
+  <h1>Five creators,<br><em>one campaign.</em></h1>
+  <div class="sub">A shortlist of UGC creators on Fiverr, evaluated by entry price, video length, and usage rights. Click any profile for full detail, or switch to table view to compare everything at a glance.</div>
+</header>
+
+<div class="toolbar">
+  <button id="btnCards" class="active" onclick="setView('cards')">Profile view</button>
+  <button id="btnCompare" onclick="setView('compare')">Comparison table</button>
+</div>
+
+<main>
+
+  <div id="cardsView">
+    <div class="roster" id="roster"></div>
+
+    <div class="detail" id="detailPanel">
+      <div class="detail-empty">↑ Select a creator to see the full detail</div>
+    </div>
+  </div>
+
+  <div class="compare-wrap" id="compareView">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>Creator</th>
+          <th>Platform</th>
+          <th>Base plan</th>
+          <th>Comments</th>
+          <th>Usage rights</th>
+          <th>Profile</th>
+        </tr>
+      </thead>
+      <tbody id="compareBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>Document prepared for internal review · Rates and terms subject to change based on creator availability on Fiverr. Avatars show initials only — no verified photos were available for these freelancers.</footer>
+
+<script>
+const creators = [
+  {
+    name:"Victoria O",
+    initials:"VO",
+    color:"#C5491B",
+    platform:"Fiverr",
+    rate:"$75",
+    rateLabel:"Basic plan",
+    comments:"Can shoot a 90-second video without editing for $95, or a more complete $130 plan with the video already edited.",
+    usage:"3 months",
+    link:"https://www.fiverr.com/ugcbyvic/create-ugc-and-social-media-videos-for-your-brand?ref_ctx_id=01891ea16c7d4345a23996327f8d4eb2&pckg_id=1&source=seller_page"
+  },
+  {
+    name:"Brian D",
+    initials:"BD",
+    color:"#2E5339",
+    platform:"Fiverr",
+    rate:"$120",
+    rateLabel:"Basic plan",
+    comments:"30-second video. The basic plan includes raw footage, shot on professional gear.",
+    usage:"3 months",
+    link:"https://www.fiverr.com/briandare?source=gig_cards&referrer_gig_slug=a-ugc-user-generated-content-video-for-tiktok-reels-facebook-youtube&ref_ctx_id=d3bfa92793b94b72ab4867667db49537&imp_id=7ed27b16-56cb-45f5-85f5-071767fd63a1"
+  },
+  {
+    name:"Haley Fernandes",
+    initials:"HF",
+    color:"#8A4B6B",
+    platform:"Fiverr",
+    rate:"$50",
+    rateLabel:"Basic plan",
+    comments:"Pricing is based on word count. The $100 standard plan includes unlimited usage rights.",
+    usage:"3 months (basic) · Unlimited on standard plan",
+    link:"https://www.fiverr.com/hfernandes94/create-a-selfie-style-video?context_referrer=search_gigs&source=drop_down_filters&ref_ctx_id=d7b91bebcffb480a8c89ead50144c88b&pckg_id=1&pos=30&context_type=rating&funnel=d7b91bebcffb480a8c89ead50144c88b&ref=leaf_category%3A2852%7Cage_range%3A25_34_years_old%7Cgender%3Afemale%7Clanguage%3Aenglish%7Caccent%3Aenglish_american&imp_id=17755dbd-3755-4fd4-8fab-42b103ecb090"
+  },
+  {
+    name:"Abigail G",
+    initials:"AG",
+    color:"#1B4965",
+    platform:"Fiverr",
+    rate:"$130",
+    rateLabel:"Basic plan",
+    comments:"Her basic plan already includes script and graphics. The standard plan includes 3 videos.",
+    usage:"3 months",
+    link:"https://www.fiverr.com/abigail_loves/your-ugc-content-creator-for-tiktok-youtube-and-instagram?ref_ctx_id=957f782d9db641a7b6e41b4028680eda&pckg_id=1&source=seller_page"
+  },
+  {
+    name:"Peter",
+    initials:"P",
+    color:"#6B5B0E",
+    platform:"Fiverr",
+    rate:"$60",
+    rateLabel:"Basic plan",
+    comments:"Excellent quality. The $100 standard plan includes 40 seconds, editing, and unlimited usage rights.",
+    usage:"3 months (basic) · Unlimited on standard plan",
+    link:"https://www.fiverr.com/petrmorozov/create-ugc-content-that-delivers-results-contact-me-today?ref_ctx_id=504f759d99244c3bb878bd8169877348&pckg_id=1&source=seller_page"
+  }
+];
+
+const roster = document.getElementById('roster');
+const detailPanel = document.getElementById('detailPanel');
+const compareBody = document.getElementById('compareBody');
+
+creators.forEach((c,i)=>{
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.onclick = ()=>showDetail(i);
+  card.innerHTML = `
+    <div class="num">0${i+1}</div>
+    <div class="card-name-row">
+      <div class="avatar" style="background:${c.color}">${c.initials}</div>
+      <h2>${c.name}</h2>
+    </div>
+    <div class="platform">${c.platform}</div>
+    <div class="rate">${c.rate}</div>
+    <div class="rate-label">${c.rateLabel}</div>
+    <div class="usage">Usage rights: <b>${c.usage}</b></div>
+  `;
+  roster.appendChild(card);
+
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td class="name-cell"><span class="avatar-sm" style="background:${c.color}">${c.initials}</span>${c.name}</td>
+    <td>${c.platform}</td>
+    <td class="price">${c.rate}</td>
+    <td>${c.comments}</td>
+    <td>${c.usage}</td>
+    <td><a href="${c.link}" target="_blank" rel="noopener">View profile →</a></td>
+  `;
+  compareBody.appendChild(row);
+});
+
+function showDetail(i){
+  const c = creators[i];
+  detailPanel.innerHTML = `
+    <div class="detail-grid">
+      <div class="detail-head">
+        <div class="num">CREATOR 0${i+1}</div>
+        <div class="detail-name-row">
+          <div class="avatar-lg" style="background:${c.color}">${c.initials}</div>
+          <h2>${c.name}</h2>
+        </div>
+        <div class="platform-tag">${c.platform}</div><br>
+        <a class="btn" href="${c.link}" target="_blank" rel="noopener">View profile on Fiverr →</a>
+      </div>
+      <table class="specs">
+        <tr><td class="k">Rate</td><td class="v price">${c.rate} <span style="font-size:13px;color:var(--muted);font-family:var(--body);">/ ${c.rateLabel.toLowerCase()}</span></td></tr>
+        <tr><td class="k">Comments</td><td class="v">${c.comments}</td></tr>
+        <tr><td class="k">Usage rights</td><td class="v rights">${c.usage}</td></tr>
+      </table>
+    </div>
+  `;
+}
+
+function setView(view){
+  const cardsView = document.getElementById('cardsView');
+  const compareView = document.getElementById('compareView');
+  const btnCards = document.getElementById('btnCards');
+  const btnCompare = document.getElementById('btnCompare');
+  if(view==='cards'){
+    cardsView.style.display='block';
+    compareView.classList.remove('active');
+    btnCards.classList.add('active');
+    btnCompare.classList.remove('active');
+  } else {
+    cardsView.style.display='none';
+    compareView.classList.add('active');
+    btnCompare.classList.add('active');
+    btnCards.classList.remove('active');
+  }
+}
+</script>
+
+</body>
+</html>
